@@ -1,35 +1,36 @@
-# income-tax-return-form Income Tax Client Signature Form
+# Income Tax Client Signature Form
 
-A GitHub-ready, browser-based client tax working-paper application built from the supplied Excel template.
+A browser-based income tax working-paper and client sign-off application.
 
-## What it does
+## Current workflow
 
-- Captures assessee basic information.
-- Captures salary, house property, agriculture, business/profession, capital gain, financial asset and other-source income.
-- Calculates taxable income using the calculation structure in the supplied workbook.
-- Calculates investment eligibility and estimated rebate.
-- Captures advance income tax / tax credit entries.
-- Produces a consolidated review page.
-- Produces a print-ready final client sign-off page.
-- Saves and loads drafts with browser `localStorage`.
-- Runs entirely in the browser. No server is required.
+1. Basic assessee information
+2. Income computation
+3. Investment rebate
+4. Tax payable and payment
+5. Client review
+6. Final signature / print
 
-## Files
+## Tax payable logic
 
-- `index.html` UI and form structure
-- `styles.css` responsive styling and print layout
-- `app.js` calculations, validation, local storage and print workflow
+The application determines tax payable before AIT or tax credits as the maximum of:
 
-## GitHub Pages
+- 1% of business turnover
+- Regular calculated tax after applicable investment rebate
+- Statutory minimum tax of **BDT 5,000 for an existing taxpayer** or **BDT 1,000 for a first-time taxpayer**
 
-1. Create a new GitHub repository.
-2. Upload these three files.
-3. Go to **Settings → Pages**.
-4. Select the main branch and root folder.
-5. Open the generated GitHub Pages URL.
+Available advance income tax and tax credits are then deducted to determine the balance tax payable.
+
+## Advance tax / payment
+
+Advance tax period/reference is deliberately a **free-text field** so the user can enter the relevant period, challan reference, payment reference or other description. Challan number, date and amount are captured separately.
+
+The payment section also records payment status, payment reference/challan, payment date, amount paid, payment method and remaining amount.
+
+## Deployment
+
+The repository is designed for GitHub Pages and does not require a server. Enable GitHub Pages from the repository Settings and select the `main` branch and root folder.
 
 ## Important
 
-This application is a client review and sign-off working paper based on the supplied Excel structure. It should be reviewed and updated by a qualified tax professional before use, particularly where tax rates, exemptions, thresholds, rebate rules or NBR requirements change.
-
-It is not an official NBR return form.
+This is a client review and tax working-paper application based on the supplied workbook structure. Tax rates, thresholds, exemptions, rebate rules and other legal parameters should be verified and updated by a qualified tax professional before production use. It is not an official NBR return form.
