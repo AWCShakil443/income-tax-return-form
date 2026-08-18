@@ -9,7 +9,7 @@
       const panel=document.querySelector('[data-panel="6"]');
       if(!panel)return;
       let card=$('reviewCard');
-      if(!card){card=document.createElement('div');card.id='reviewCard';card.className='review-card final-tax-review';const head=panel.querySelector('.section-head');(head?head:panel.firstChild).insertAdjacentElement('afterend',card);}
+      if(!card){card=document.createElement('div');card.id='reviewCard';card.className='review-card final-tax-review';const head=panel.querySelector('.section-head');if(head)head.insertAdjacentElement('afterend',card);else panel.insertBefore(card,panel.firstChild);}
       let preview=$('signaturePreview');
       if(!preview){preview=document.createElement('div');preview.id='signaturePreview';preview.className='signature-preview';const decl=panel.querySelector('.declaration');if(decl)decl.parentNode.insertBefore(preview,decl);}
       return {card,preview};
@@ -17,8 +17,9 @@
     const oldReview=window.review;
     window.review=function(){
       const e=ensure();
+      let st={};
+      if(typeof window.calculate==='function')st=window.calculate()||{};
       if(oldReview)try{oldReview()}catch(err){console.warn('Previous review renderer skipped:',err)}
-      const st=window.state||{};
       const val=id=>$(id)?.value||'';
       if(e?.card)e.card.innerHTML=`<div class="review-header"><h3>Final Tax Calculation Summary</h3><div>Assessment Year ${val('assessmentYear')}</div></div><div class="review-grid">
       <div><small>Assessee</small><strong>${val('name')||'Not provided'}</strong></div>
@@ -48,6 +49,10 @@
     ensure();
     const oldPrint=$('printBtn');
     if(oldPrint)oldPrint.onclick=()=>{if(typeof window.showStep==='function')window.showStep(6);window.review();setTimeout(()=>window.print(),150)};
+    const style=document.createElement('style');
+    style.textContent='.final-tax-review{margin-bottom:22px}.final-form-section-title{font-weight:800;font-size:14px;padding:15px 16px 8px;background:#f7f9fc;border-top:1px solid #d9dee8}.review-highlight{background:#eef4ff}.review-highlight strong{font-size:17px}.signature-tax-summary{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin:15px 0}.signature-tax-summary>div{padding:12px;border:1px solid #d9dee8;border-radius:8px;background:#fff}.signature-tax-summary span{display:block;color:#667085;font-size:11px}.signature-tax-summary strong{display:block;font-size:17px;margin-top:3px}.signature-tax-summary .primary-amount{background:#10213f;color:#fff}.signature-tax-summary .primary-amount span{color:#dbe5f5}.approval-note{font-size:11px;color:#5c4a20;border-left:4px solid #f59e0b;background:#fffaf0;padding:10px 12px}@media(max-width:800px){.signature-tax-summary{grid-template-columns:1fr}}@media print{.final-tax-review{page-break-inside:avoid}.signature-tax-summary{grid-template-columns:repeat(3,1fr)}}';
+    document.head.appendChild(style);
   };
+  s.onerror=function(){console.error('Unable to load the stable calculation engine.');};
   document.head.appendChild(s);
 })();
