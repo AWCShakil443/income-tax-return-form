@@ -1,11 +1,31 @@
-/* Final output loader. Loads the stable tax engine, supplies compatibility elements, and embeds the complete Final Client Tax Form inside Review & Signature. */
+/* Navigation-first loader. Section navigation must work even if the enhancement/calculation layer is delayed. */
 (function(){
+  function bindNavigation(){
+    const panels=[...document.querySelectorAll('.step-panel')];
+    const steps=[...document.querySelectorAll('.step')];
+    if(!panels.length||!steps.length)return;
+    window.showStep=function(n){
+      n=Math.max(1,Math.min(6,Number(n)||1));
+      panels.forEach(p=>p.classList.toggle('active',Number(p.dataset.panel)===n));
+      steps.forEach(s=>s.classList.toggle('active',Number(s.dataset.step)===n));
+      if(n===6 && typeof window.review==='function'){
+        try{window.review();}catch(e){console.warn('Review render skipped:',e)}
+      }
+      window.scrollTo({top:0,behavior:'smooth'});
+    };
+    steps.forEach(btn=>{btn.onclick=function(e){e.preventDefault();window.showStep(Number(btn.dataset.step));};});
+    document.querySelectorAll('.next').forEach(btn=>{btn.onclick=function(e){e.preventDefault();const active=document.querySelector('.step-panel.active');const n=active?Number(active.dataset.panel):1;window.showStep(n+1);};});
+    document.querySelectorAll('.prev').forEach(btn=>{btn.onclick=function(e){e.preventDefault();const active=document.querySelector('.step-panel.active');const n=active?Number(active.dataset.panel):1;window.showStep(n-1);};});
+  }
+  bindNavigation();
+
   if(!document.getElementById('estimatedTax')){
     const compatibility=document.createElement('span');
     compatibility.id='estimatedTax';
     compatibility.hidden=true;
     document.body.appendChild(compatibility);
   }
+
   const s=document.createElement('script');
   s.src='https://raw.githubusercontent.com/AWCShakil443/income-tax-return-form/3c77e28/app.js';
   s.onload=function(){
@@ -60,6 +80,6 @@
     document.head.appendChild(style);
     window.review();
   };
-  s.onerror=function(){console.error('Unable to load the stable calculation engine.');};
+  s.onerror=function(){console.warn('Enhancement layer unavailable; navigation remains active.');};
   document.head.appendChild(s);
 })();
